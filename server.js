@@ -4,13 +4,6 @@ const hbs = require('express-handlebars');
 
 const app = express(); // tworzymy nową aplikację expressową i przypisujemy ją do stałej app
 
-app.use((req, res, next) => {
-  res.show = (name) => {
-    res.sendFile(path.join(__dirname, `/views/${name}`));
-  };
-  next();
-});
-
 app.use(express.static(path.join(__dirname, '/public')));
 
 app.engine('hbs', hbs()); // informujemy Express, że pliki o rozszerzeniu .hbs powinny być renderowane przez silnik hbs (czyli zaimportowany Handlebars)
@@ -18,27 +11,26 @@ app.set('view engine', 'hbs'); // ten fragment mówi, że w aplikacji używamy w
 // domyślnie Handlebars szuka templete'ów w katalogu views
 
 app.get('/', (req, res) => {
-  res.show('index.html');
+  res.render('index', {layout: false});
 });
 
 app.get('/about', (req, res) => {
-  res.show('about.html');
+  res.render('about', {layout: false});
 });
 
 app.get('/contact', (req, res) => {
-  res.show('contact.html');
+  res.render('contact', {layout: false});
 });
 
 app.get('/info', (req, res) => {
-  res.show('info.html');
+  res.render('info', {layout: false});
 });
 
 app.get('/history', (req, res) => {
-  res.show('history.html');
+  res.render('history', {layout: false});
 });
 
 app.get('/hello/:name', (req, res) => {
-  // res.send(`Hello ${req.params.name}!`);
   res.render('hello', { layout: false,  name: req.params.name }); // render przed zwróceniem odpowiedzi przepuszcza plik przez zdefiniowany przez nas silnik (w app.set)
 }); // pierwszy argument ustala nazwę widoku, który chcemy wykorzystać, a drugi przekazuje obiekt z wartościami dla placeholderów
 
