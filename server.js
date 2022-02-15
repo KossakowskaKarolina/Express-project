@@ -6,9 +6,22 @@ const app = express(); // tworzymy nową aplikację expressową i przypisujemy j
 
 app.use(express.static(path.join(__dirname, '/public')));
 
+app.use(express.urlencoded({ extended: false })); // middleware do poprawnej obsługi formularza z metody post; extended: false, ponieważ nie mamy zagnieżdżonych danych
+
 app.engine('hbs', hbs()); // informujemy Express, że pliki o rozszerzeniu .hbs powinny być renderowane przez silnik hbs (czyli zaimportowany Handlebars)
 app.set('view engine', 'hbs'); // ten fragment mówi, że w aplikacji używamy widoków właśnie o tym rozszerzeniu (przy kompilacji, będziemy mogli wskazywać tylko jego nazwę, a Express sam domyśli się, że ma szukać pliku z odpowiednią końcówką)
 // domyślnie Handlebars szuka templete'ów w katalogu views
+
+app.post('/contact/send-message', (req, res) => { // post - do przesyłania większych obiektów; res.json to odpowiednik res.send, tylko zwraca dane w formacie JSON, zamiast tekstu
+  const { author, sender, title, message } = req.body; // body - atrybut obiektu zapytania zawierający dane wysyłane wraz z żądaniem (dostępne w obiekcie request)
+
+  if(author && sender && title && message) {
+    res.render('contact', { isSent: true });
+  }
+  else {
+    res.render('contact', { isError: true });
+  }
+});
 
 app.get('/', (req, res) => {
   res.render('index');
