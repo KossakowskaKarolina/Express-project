@@ -1,6 +1,8 @@
 const express = require('express');
 const path = require('path');
 const hbs = require('express-handlebars');
+const multer  = require('multer')
+const upload = multer();
 
 const app = express(); // tworzymy nową aplikację expressową i przypisujemy ją do stałej app
 
@@ -12,11 +14,12 @@ app.engine('hbs', hbs()); // informujemy Express, że pliki o rozszerzeniu .hbs 
 app.set('view engine', 'hbs'); // ten fragment mówi, że w aplikacji używamy widoków właśnie o tym rozszerzeniu (przy kompilacji, będziemy mogli wskazywać tylko jego nazwę, a Express sam domyśli się, że ma szukać pliku z odpowiednią końcówką)
 // domyślnie Handlebars szuka templete'ów w katalogu views
 
-app.post('/contact/send-message', (req, res) => { // post - do przesyłania większych obiektów; res.json to odpowiednik res.send, tylko zwraca dane w formacie JSON, zamiast tekstu
+app.post('/contact/send-message', upload.single('file'), (req, res) => { // post - do przesyłania większych obiektów; res.json to odpowiednik res.send, tylko zwraca dane w formacie JSON, zamiast tekstu
   const { author, sender, title, message } = req.body; // body - atrybut obiektu zapytania zawierający dane wysyłane wraz z żądaniem (dostępne w obiekcie request)
+  const fileName = req.file.originalname;
 
-  if(author && sender && title && message) {
-    res.render('contact', { isSent: true });
+  if(author && sender && title && message && fileName) {
+    res.render('contact', { isSent: true, fileName });
   }
   else {
     res.render('contact', { isError: true });
